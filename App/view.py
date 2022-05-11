@@ -6,11 +6,7 @@ from tkinter import Frame
 from tkinter import Scrollbar
 from tkinter import ttk
 from tkinter.font import Font
-from model import Guardar
-from model import Listar
-from model import Modificar
-from model import Mostrar
-from model import Borrar
+from model import ABMC
 from tkcalendar import DateEntry
 
 
@@ -18,6 +14,7 @@ def ventana_ppal(root):
     root.resizable(False, False)
     root.title("Reclamos a Proveedores")
     root.configure(background="khaki")
+    # root.iconbitmap("pngwing.ico")
     b_font = Font(family="Helvetica", size=11, weight="bold")
     b_font2 = Font(family="Helvetica", size=10, weight="bold")
 
@@ -129,12 +126,18 @@ def ventana_ppal(root):
         defectos = ""
         productos = ""
         mis_proveedores = []
+        nom_provs = []
 
         def __init__(self, nombre, productos, defectos):
             self.nombre = nombre
             self.defectos = defectos
             self.productos = productos
             self.__class__.mis_proveedores.append(self)
+
+        @classmethod
+        def listnomprov(self):
+            for x in range(0, len(self.mis_proveedores), 1):
+                self.nom_provs.append(self.mis_proveedores[x].nombre)
 
     cartocor = Proveedor("Cartocor", prod_cajas, def_cajas)
     multilabel = Proveedor("Multilabel", prod_etiquetas, def_etiquetas)
@@ -145,19 +148,13 @@ def ventana_ppal(root):
     # Variables para manejar los desplegables #############
     #######################################################
 
-    nom_provs = []
-
     firstrun = 0
 
-    # Funciones auxiliares para la interfaz ###################
+    # Funciones auxiliares para la interfaz ###############
     #######################################################
 
-    def listnomprov():
-        for x in range(0, len(Proveedor.mis_proveedores), 1):
-            nom_provs.append(Proveedor.mis_proveedores[x].nombre)
-
     if firstrun == 0:
-        listnomprov()
+        Proveedor.listnomprov()
         firstrun += 1
 
     def elijeprov(event):
@@ -167,6 +164,12 @@ def ventana_ppal(root):
                 e_producto.config(values=Proveedor.mis_proveedores[x].productos)
                 e_defecto.current(0)
                 e_producto.current(0)
+
+    def elijeprod(*args):
+        for x in range(0, len(Proveedor.mis_proveedores), 1):
+            if Proveedor.mis_proveedores[x].nombre == e_proveedor.get():
+                e_defecto.config(values=Proveedor.mis_proveedores[x].defectos)
+                e_producto.config(values=Proveedor.mis_proveedores[x].productos)
 
     # label titulo principal ##############################
     #######################################################
@@ -201,21 +204,35 @@ def ventana_ppal(root):
     #######################################################
 
     e_proveedor = ttk.Combobox(
-        root, values=nom_provs, width=18, textvariable=provval, state="readonly"
+        root,
+        values=Proveedor.nom_provs,
+        width=18,
+        textvariable=provval,
+        state="readonly",
     )
     e_proveedor.grid(row=1, column=1, padx=10, pady=3)
     e_proveedor.bind("<<ComboboxSelected>>", elijeprov)
     e_proveedor.current(0)
 
     e_producto = ttk.Combobox(
-        root, values=prod_cajas, width=18, textvariable=prodval, state="readonly"
+        root,
+        values=prod_cajas,
+        width=18,
+        textvariable=prodval,
+        state="readonly",
     )
     e_producto.grid(row=2, column=1, padx=10, pady=3)
+
     e_producto.current(0)
 
     e_defecto = ttk.Combobox(
-        root, values=def_cajas, width=18, textvariable=defval, state="readonly"
+        root,
+        values=def_cajas,
+        width=18,
+        textvariable=defval,
+        state="readonly",
     )
+
     e_defecto.current(0)
     e_defecto.grid(row=3, column=1, padx=10, pady=3)
 
@@ -235,109 +252,7 @@ def ventana_ppal(root):
     e_nreclamo = Entry(root, textvariable=nrecval, bg="white")
     e_nreclamo.grid(row=8, column=1, padx=10, pady=3)
 
-    # Botones #############################################
-    #######################################################
-
-    b_guardar = Button(
-        root,
-        text="Guardar",
-        borderwidth=4,
-        command=lambda: Guardar(
-            provval.get(),
-            prodval.get(),
-            defval.get(),
-            cantval.get(),
-            fecval.get(),
-            mssgval,
-            provval,
-            prodval,
-            defval,
-            cantval,
-            fecval,
-            nrecval,
-            arbol,
-        ),
-        fg="black",
-        bg="gold2",
-        width=13,
-        font=b_font,
-    )
-    b_guardar.grid(row=6, column=1, pady=5)
-
-    b_mostrar = Button(
-        root,
-        text="Mostrar",
-        borderwidth=4,
-        command=lambda: Mostrar(nrecval.get(), mssgval, arbol, nrecval),
-        fg="black",
-        bg="gold2",
-        width=13,
-        font=b_font,
-    )
-    b_mostrar.grid(row=9, column=1, pady=5)
-
-    b_modificar = Button(
-        root,
-        text="Modificar",
-        borderwidth=4,
-        command=lambda: Modificar(
-            provval.get(),
-            prodval.get(),
-            defval.get(),
-            cantval.get(),
-            fecval.get(),
-            nrecval.get(),
-            mssgval,
-            provval,
-            prodval,
-            defval,
-            cantval,
-            fecval,
-            nrecval,
-            arbol,
-        ),
-        fg="black",
-        bg="gold2",
-        width=13,
-        font=b_font,
-    )
-    b_modificar.grid(row=10, column=1, pady=5)
-
-    b_borrar = Button(
-        root,
-        text="Borrar",
-        borderwidth=4,
-        command=lambda: Borrar(
-            nrecval.get(),
-            mssgval,
-            arbol,
-            nrecval,
-            provval,
-            prodval,
-            defval,
-            cantval,
-            fecval,
-        ),
-        fg="black",
-        bg="gold2",
-        width=10,
-        font=b_font,
-    )
-    b_borrar.grid(row=10, column=0, pady=5, padx=5)
-
-    b_listar = Button(
-        root,
-        text="Listar",
-        borderwidth=4,
-        command=lambda: Listar(
-            mssgval, provval, prodval, defval, cantval, fecval, nrecval, arbol
-        ),
-        fg="black",
-        bg="gold2",
-        width=10,
-        font=b_font,
-    )
-    b_listar.grid(row=9, column=0, pady=3, padx=5)
+    prodval.trace_add("write", elijeprod)
 
     # Stilo del Treeview ##################################
     #######################################################
@@ -391,3 +306,71 @@ def ventana_ppal(root):
     arbol.pack()
 
     scroll_arbol.config(command=arbol.yview)
+
+    # Instanciación #######################################
+    #######################################################
+
+    boton = ABMC(mssgval, arbol, nrecval, provval, prodval, defval, cantval, fecval)
+
+    # Botones #############################################
+    #######################################################
+
+    b_guardar = Button(
+        root,
+        text="Guardar",
+        borderwidth=4,
+        command=lambda: boton.Guardar(),
+        fg="black",
+        bg="gold2",
+        width=13,
+        font=b_font,
+    )
+    b_guardar.grid(row=6, column=1, pady=5)
+
+    b_mostrar = Button(
+        root,
+        text="Mostrar",
+        borderwidth=4,
+        command=lambda: boton.Mostrar(),
+        fg="black",
+        bg="gold2",
+        width=13,
+        font=b_font,
+    )
+    b_mostrar.grid(row=9, column=1, pady=5)
+
+    b_modificar = Button(
+        root,
+        text="Modificar",
+        borderwidth=4,
+        command=lambda: boton.Modificar(),
+        fg="black",
+        bg="gold2",
+        width=13,
+        font=b_font,
+    )
+    b_modificar.grid(row=10, column=1, pady=5)
+
+    b_borrar = Button(
+        root,
+        text="Borrar",
+        borderwidth=4,
+        command=lambda: boton.Borrar(),
+        fg="black",
+        bg="gold2",
+        width=10,
+        font=b_font,
+    )
+    b_borrar.grid(row=10, column=0, pady=5, padx=5)
+
+    b_listar = Button(
+        root,
+        text="Listar",
+        borderwidth=4,
+        command=lambda: boton.Listar(),
+        fg="black",
+        bg="gold2",
+        width=10,
+        font=b_font,
+    )
+    b_listar.grid(row=9, column=0, pady=3, padx=5)

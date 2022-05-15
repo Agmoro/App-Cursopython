@@ -119,6 +119,9 @@ class ABMC:
                 )
                 self.nrecval.set("")
                 db.close
+            elif not re.match("^[0-9]+$", self.cantval.get()):
+                self.mssgval.set("Cantidad deben ser números.")
+                self.cantval.set("")
             elif db.get(self.nrecval.get(), 0) == 0:
                 self.mssgval.set("N° de reclamo no existente")
                 self.nrecval.set("")

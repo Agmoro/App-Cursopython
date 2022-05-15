@@ -9,8 +9,9 @@ from tkinter.font import Font
 from model import ABMC
 from tkcalendar import DateEntry
 
-# Eventualmente lo que sigue lo meteré en otra base ###
-# de datos, pero no queria doble CRUD todavia #########
+# Lo que sigue a continuación eventualmente lo ########
+# metere en otra base de datos, pero no queria ########
+# doble CRUD todavia ##################################
 
 def_cajas = [
     "curvas",
@@ -99,6 +100,9 @@ prod_tapas = [
 
 prod_film = ["film envolvedora", "film manual", "film techo pallet"]
 
+# Clase Proveedor - maneja los dropboxes ##############
+#######################################################
+
 
 class Proveedor:
     nombre = ""
@@ -142,6 +146,10 @@ class Proveedor:
         if cls.firstrun == 0:
             cls.listnomprov()
             cls.firstrun += 1
+
+
+# clase Ventana - genera la GUI #######################
+#######################################################
 
 
 class Ventana:
@@ -349,7 +357,7 @@ class Ventana:
 
         self.scroll_arbol.config(command=self.arbol.yview)
 
-        # Instanciación #######################################
+        # Instanciación del Modelo ############################
         #######################################################
 
         self.boton = ABMC(

@@ -10,13 +10,57 @@ from model import ABMC
 from tkcalendar import DateEntry
 
 
+class Proveedor:
+    nombre = ""
+    defectos = ""
+    productos = ""
+    mis_proveedores = []
+    nom_provs = []
+    firstrun = 0
+
+    def __init__(self, nombre, productos, defectos):
+        self.nombre = nombre
+        self.defectos = defectos
+        self.productos = productos
+        self.__class__.mis_proveedores.append(self)
+
+    # metodo auxiliar que necesite para que me funcione un bind
+    def removerse(self):
+        self.__class__.mis_proveedores.remove(self)
+
+    def elijeprov(self, event1):
+        for x in range(0, len(self.mis_proveedores), 1):
+            if self.mis_proveedores[x].nombre == self.nombre.get():
+                self.productos.config(values=self.mis_proveedores[x].defectos)
+                self.defectos.config(values=self.mis_proveedores[x].productos)
+                self.productos.current(0)
+                self.defectos.current(0)
+
+    def elijeprod(self, *args):
+        for x in range(0, len(self.mis_proveedores), 1):
+            if self.mis_proveedores[x].nombre == self.nombre.get():
+                self.productos.config(values=self.mis_proveedores[x].defectos)
+                self.defectos.config(values=self.mis_proveedores[x].productos)
+
+    @classmethod
+    def listnomprov(cls):
+        for x in range(0, len(cls.mis_proveedores), 1):
+            cls.nom_provs.append(cls.mis_proveedores[x].nombre)
+
+    @classmethod
+    def first_run(cls):
+        if cls.firstrun == 0:
+            cls.listnomprov()
+            cls.firstrun += 1
+
+
 def ventana_ppal(root):
     root.resizable(False, False)
     root.title("Reclamos a Proveedores")
     root.configure(background="khaki")
     root.iconbitmap("pngwing.ico")
     b_font = Font(family="Helvetica", size=11, weight="bold")
-    b_font2 = Font(family="Helvetica", size=10, weight="bold")
+    b_font2 = Font(family="Helvetica", size=19, weight="bold")
 
     # Definicion de variables #############################
     #######################################################
@@ -121,63 +165,31 @@ def ventana_ppal(root):
     # Definicion de Proveedores ###########################
     #######################################################
 
-    class Proveedor:
-        nombre = ""
-        defectos = ""
-        productos = ""
-        mis_proveedores = []
-        nom_provs = []
-
-        def __init__(self, nombre, productos, defectos):
-            self.nombre = nombre
-            self.defectos = defectos
-            self.productos = productos
-            self.__class__.mis_proveedores.append(self)
-
-        @classmethod
-        def listnomprov(self):
-            for x in range(0, len(self.mis_proveedores), 1):
-                self.nom_provs.append(self.mis_proveedores[x].nombre)
-
     cartocor = Proveedor("Cartocor", prod_cajas, def_cajas)
     multilabel = Proveedor("Multilabel", prod_etiquetas, def_etiquetas)
     guala = Proveedor("Guala", prod_tapas, def_tapas)
     cattorini = Proveedor("Cattorini Hnos.", prod_botellas, def_botellas)
     islagrande = Proveedor("Isla Grande", prod_film, def_film)
 
-    # Variables para manejar los desplegables #############
-    #######################################################
-
-    firstrun = 0
-
-    # Funciones auxiliares para la interfaz ###############
-    #######################################################
-
-    if firstrun == 0:
-        Proveedor.listnomprov()
-        firstrun += 1
-
-    def elijeprov(event):
-        for x in range(0, len(Proveedor.mis_proveedores), 1):
-            if Proveedor.mis_proveedores[x].nombre == e_proveedor.get():
-                e_defecto.config(values=Proveedor.mis_proveedores[x].defectos)
-                e_producto.config(values=Proveedor.mis_proveedores[x].productos)
-                e_defecto.current(0)
-                e_producto.current(0)
-
-    def elijeprod(*args):
-        for x in range(0, len(Proveedor.mis_proveedores), 1):
-            if Proveedor.mis_proveedores[x].nombre == e_proveedor.get():
-                e_defecto.config(values=Proveedor.mis_proveedores[x].defectos)
-                e_producto.config(values=Proveedor.mis_proveedores[x].productos)
+    Proveedor.first_run()
 
     # label titulo principal ##############################
     #######################################################
 
+    m_tprin = Frame(root)
+    m_tprin.config(bg="khaki")
+    m_tprin.config(bd=3)
+    m_tprin.config(pady=5)
+    m_tprin.config(relief="flat")
+    m_tprin.grid(row=0, columnspan=20)
+
     t_principal = Label(
-        root, text="Registro de Reclamos a Proveedores", bg="khaki", font=b_font2
+        m_tprin,
+        text="                   REGISTRO DE RECLAMOS A PROVEEDORES                  ",
+        bg="lightgoldenrod3",
+        font=b_font2,
     )
-    t_principal.grid(row=0, columnspan=6, pady=10)
+    t_principal.pack()
 
     # labels de campos ####################################
     #######################################################
@@ -195,10 +207,18 @@ def ventana_ppal(root):
     l_nreclamo = Label(root, text="N° de Reclamo", bg="khaki")
     l_nreclamo.grid(row=8, column=0, sticky="w", padx=8)
 
-    fila7 = Label(
-        root, textvariable=mssgval, bg="khaki", font=b_font2
-    )  # label de notificaciones
-    fila7.grid(row=10, column=4, columnspan=2, sticky="n")
+    # label de notificaciones #############################
+    #######################################################
+
+    m_f7 = Frame(root)
+    m_f7.config(bg="lightgoldenrod3")
+    m_f7.config(bd=1)
+    m_f7.config(relief="sunken")
+    m_f7.grid(row=9, rowspan=3, column=4, columnspan=6, pady=6, padx=5, sticky="w")
+
+    fila7 = Label(m_f7, textvariable=mssgval, bg="lightgoldenrod3", font=b_font)
+    fila7.pack(fill="both", expand="True", side="bottom")
+    fila7.config(width=61, height=4)
 
     # Entries #############################################
     #######################################################
@@ -211,7 +231,7 @@ def ventana_ppal(root):
         state="readonly",
     )
     e_proveedor.grid(row=1, column=1, padx=10, pady=3)
-    e_proveedor.bind("<<ComboboxSelected>>", elijeprov)
+
     e_proveedor.current(0)
 
     e_producto = ttk.Combobox(
@@ -252,7 +272,11 @@ def ventana_ppal(root):
     e_nreclamo = Entry(root, textvariable=nrecval, bg="white")
     e_nreclamo.grid(row=8, column=1, padx=10, pady=3)
 
-    prodval.trace_add("write", elijeprod)
+    provbind = Proveedor(e_proveedor, e_defecto, e_producto)
+    provbind.removerse()
+
+    e_proveedor.bind("<<ComboboxSelected>>", provbind.elijeprov)
+    prodval.trace_add("write", provbind.elijeprod)
 
     # Stilo del Treeview ##################################
     #######################################################
@@ -273,7 +297,7 @@ def ventana_ppal(root):
     #######################################################
 
     m_arbol = Frame(root)
-    m_arbol.grid(row=1, rowspan=9, column=4, padx=5, pady=4, sticky="n")
+    m_arbol.grid(row=1, rowspan=8, column=4, padx=5, pady=4, sticky="n")
 
     # Treeview Scrollbar ##################################
     #######################################################

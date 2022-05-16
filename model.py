@@ -1,5 +1,6 @@
 import shelve
 from tkinter import messagebox
+from tkinter import StringVar
 import re
 
 # Funciones ###########################
@@ -119,9 +120,7 @@ class ABMC:
                 )
                 self.nrecval.set("")
                 db.close
-            elif not re.match("^[0-9]+$", self.cantval.get()):
-                self.mssgval.set("Cantidad deben ser números.")
-                self.cantval.set("")
+
             elif db.get(self.nrecval.get(), 0) == 0:
                 self.mssgval.set("N° de reclamo no existente")
                 self.nrecval.set("")
@@ -136,6 +135,11 @@ class ABMC:
                 self.mssgval.set("Completar al menos un campo arriba de Guardar")
                 self.nrecval.set("")
                 db.close
+            elif self.cantval.get() != "" and not re.match(
+                "^[0-9]+$", self.cantval.get()
+            ):
+                self.mssgval.set("Cantidad deben ser números.")
+                self.cantval.set("")
             else:
                 reclamo = {}
                 reclamo["reclamo n°"] = self.nrecval.get()
@@ -217,7 +221,9 @@ class ABMC:
         self.mssgval.set("")
         try:
             if not re.match("^[0-9]+$", self.nrecval.get()):
-                self.mssgval.set("Ingresa N° de reclamo a mostrar (solo números).")
+                self.mssgval.set(
+                    "Ingresa N° de reclamo a mostrar (solo números), o doble click en elemento"
+                )
                 self.nrecval.set("")
             else:
                 self.arbol.delete(*self.arbol.get_children())
@@ -245,3 +251,88 @@ class ABMC:
             self.mssgval.set("N° de reclamo no existe")
             self.nrecval.set("")
             db.close
+
+    def MostrarDC(self, e):
+        self.selectfocus = self.arbol.focus()
+        self.nrecval.set(str(self.arbol.item(self.selectfocus)["values"][0]))
+        self.arbol.delete(*self.arbol.get_children())
+        db = shelve.open("reclamos")
+        try:
+            self.arbol.insert(
+                parent="",
+                index="end",
+                iid=0,
+                text="",
+                values=list(db[self.nrecval.get()].values()),
+            )
+            self.nrecval.set(db[self.nrecval.get()]["reclamo n°"])
+            self.fecval.set(db[self.nrecval.get()]["fecha"])
+            self.provval.set(db[self.nrecval.get()]["proveedor"])
+            self.prodval.set(db[self.nrecval.get()]["producto"])
+            self.defval.set(db[self.nrecval.get()]["defecto"])
+            self.cantval.set(db[self.nrecval.get()]["cantidad"])
+
+        except:
+            self.mssgval.set("N° de reclamo no encontrado")
+
+        db.close
+
+    def cambiarcolor(
+        self,
+        r,
+        root,
+        color1,
+        color2,
+        color3,
+        color4,
+        color5,
+        listacolor1,
+        listacolor2,
+        listabotones,
+        estilo,
+    ):
+        self.color1 = color1
+        self.color2 = color2
+        self.color3 = color3
+        self.color4 = color4
+        self.color5 = color5
+        self.r = r
+        self.listacolor1 = listacolor1
+        self.listacolor2 = listacolor2
+        self.listabotones = listabotones
+        self.root = root
+        self.estilo = estilo
+
+        if self.r.get() == 1:
+            self.color1 = "#FF88DC"
+            self.color2 = "#91A6FF"
+            self.color3 = "black"
+            self.color4 = "#FF5154"
+            self.color5 = "#FFFFFF"
+        elif self.r.get() == 2:
+            self.color1 = "#A1C349"
+            self.color2 = "#87A330"
+            self.color3 = "black"
+            self.color4 = "#2A3C24"
+            self.color5 = "#CAD593"
+        elif self.r.get() == 3:
+            self.color1 = "khaki"
+            self.color2 = "lightgoldenrod3"
+            self.color3 = "black"
+            self.color4 = "khaki4"
+            self.color5 = "gold2"
+
+        for self.wid in self.listacolor1:
+            self.wid.configure(bg=self.color1)
+        for self.wid in self.listacolor2:
+            self.wid.configure(bg=self.color2)
+        for self.wid in self.listabotones:
+            self.wid.configure(bg=self.color5, fg=self.color3)
+        self.root.configure(background=self.color1)
+        self.estilo.configure(
+            "Treeview",
+            background=self.color2,
+            foreground=self.color3,
+            fieldbackground=self.color2,
+        )
+        self.estilo.map("Treeview", background=[("selected", self.color4)])

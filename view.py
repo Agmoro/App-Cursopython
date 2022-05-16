@@ -1,4 +1,4 @@
-from tkinter import Label
+from tkinter import Label, LabelFrame, Radiobutton
 from tkinter import Entry
 from tkinter import StringVar
 from tkinter import Button
@@ -6,8 +6,10 @@ from tkinter import Frame
 from tkinter import Scrollbar
 from tkinter import ttk
 from tkinter.font import Font
+from tkinter import IntVar
 from model import ABMC
 from tkcalendar import DateEntry
+from babel.numbers import *  # esto esta aca por que para hacer un ejecutable, el pyinstaller no encontraba el hidden import
 
 # Lo que sigue a continuación eventualmente lo ########
 # metere en otra base de datos, pero no queria ########
@@ -153,11 +155,18 @@ class Proveedor:
 
 
 class Ventana:
+    color1 = "khaki"
+    color2 = "lightgoldenrod3"
+    color3 = "black"
+    color4 = "khaki4"
+    color5 = "gold2"
+
     def __init__(self, window):
         self.root = window
         self.root.resizable(False, False)
         self.root.title("Reclamos a Proveedores")
-        self.root.configure(background="khaki")
+        self.root.configure(background=self.color1)
+        # self.root.iconbitmap("F:\Curso Python\App ABMC\pngwing.ico")
         self.root.iconbitmap("pngwing.ico")
 
         # Definicion de fuentes ###############################
@@ -192,7 +201,7 @@ class Ventana:
         #######################################################
 
         self.m_tprin = Frame(self.root)
-        self.m_tprin.config(bg="khaki")
+        self.m_tprin.config(bg=self.color1)
         self.m_tprin.config(bd=3)
         self.m_tprin.config(pady=5)
         self.m_tprin.config(relief="flat")
@@ -200,8 +209,8 @@ class Ventana:
 
         self.t_principal = Label(
             self.m_tprin,
-            text="                   REGISTRO DE RECLAMOS A PROVEEDORES                  ",
-            bg="lightgoldenrod3",
+            text="                   REGISTRO DE RECLAMOS A PROVEEDORES                   ",
+            bg=self.color2,
             font=self.b_font2,
         )
         self.t_principal.pack()
@@ -209,24 +218,26 @@ class Ventana:
         # labels de campos ####################################
         #######################################################
 
-        self.l_proveedor = Label(self.root, text="Proveedor", bg="khaki")
+        self.l_proveedor = Label(self.root, text="Proveedor", bg=self.color1)
         self.l_proveedor.grid(row=1, column=0, sticky="w", padx=8)
-        self.l_producto = Label(self.root, text="Producto", bg="khaki")
+        self.l_producto = Label(self.root, text="Producto", bg=self.color1)
         self.l_producto.grid(row=2, column=0, sticky="w", padx=8)
-        self.l_defecto = Label(self.root, text="Defecto", bg="khaki")
+        self.l_defecto = Label(self.root, text="Defecto", bg=self.color1)
         self.l_defecto.grid(row=3, column=0, sticky="w", padx=8)
-        self.l_cantidad = Label(self.root, text="Cantidad", bg="khaki")
+        self.l_cantidad = Label(self.root, text="Cantidad", bg=self.color1)
         self.l_cantidad.grid(row=4, column=0, sticky="w", padx=8)
-        self.l_fecha = Label(self.root, text="Fecha", bg="khaki")
+        self.l_fecha = Label(self.root, text="Fecha", bg=self.color1)
         self.l_fecha.grid(row=5, column=0, sticky="w", padx=8)
-        self.l_nreclamo = Label(self.root, text="N° de Reclamo", bg="khaki")
+        self.l_nreclamo = Label(self.root, text="N° de Reclamo", bg=self.color1)
         self.l_nreclamo.grid(row=8, column=0, sticky="w", padx=8)
+        self.l_colores = Label(self.root, text="Colores de tema", bg=self.color1)
+        self.l_colores.grid(row=12, column=0, sticky="w", padx=8)
 
         # label de notificaciones #############################
         #######################################################
 
         self.m_f7 = Frame(self.root)
-        self.m_f7.config(bg="lightgoldenrod3")
+        self.m_f7.config(bg=self.color2)
         self.m_f7.config(bd=1)
         self.m_f7.config(relief="sunken")
         self.m_f7.grid(
@@ -234,7 +245,7 @@ class Ventana:
         )
 
         self.fila7 = Label(
-            self.m_f7, textvariable=self.mssgval, bg="lightgoldenrod3", font=self.b_font
+            self.m_f7, textvariable=self.mssgval, bg=self.color2, font=self.b_font
         )
         self.fila7.pack(fill="both", expand="True", side="bottom")
         self.fila7.config(width=61, height=4)
@@ -304,13 +315,13 @@ class Ventana:
         self.style.theme_use("default")
         self.style.configure(
             "Treeview",
-            background="lightgoldenrod3",
-            foreground="black",
+            background=self.color2,
+            foreground=self.color3,
             rowheight=20,
-            fieldbackground="lightgoldenrod3",
+            fieldbackground=self.color2,
         )
 
-        self.style.map("Treeview", background=[("selected", "khaki4")])
+        self.style.map("Treeview", background=[("selected", self.color4)])
 
         # Treeview Frame ######################################
         #######################################################
@@ -371,6 +382,11 @@ class Ventana:
             self.fecval,
         )
 
+        # Binding para Mostrar lo doble clickeado #############
+        #######################################################
+
+        self.arbol.bind("<Double-1>", self.boton.MostrarDC)
+
         # Botones #############################################
         #######################################################
 
@@ -379,8 +395,8 @@ class Ventana:
             text="Guardar",
             borderwidth=4,
             command=lambda: self.boton.Guardar(),
-            fg="black",
-            bg="gold2",
+            fg=self.color3,
+            bg=self.color5,
             width=13,
             font=self.b_font,
         )
@@ -391,45 +407,150 @@ class Ventana:
             text="Mostrar",
             borderwidth=4,
             command=lambda: self.boton.Mostrar(),
-            fg="black",
-            bg="gold2",
+            fg=self.color3,
+            bg=self.color5,
             width=13,
             font=self.b_font,
         )
-        self.b_mostrar.grid(row=9, column=1, pady=5)
+        self.b_mostrar.grid(row=9, column=1, pady=4)
 
         self.b_modificar = Button(
             self.root,
             text="Modificar",
             borderwidth=4,
             command=lambda: self.boton.Modificar(),
-            fg="black",
-            bg="gold2",
+            fg=self.color3,
+            bg=self.color5,
             width=13,
             font=self.b_font,
         )
-        self.b_modificar.grid(row=10, column=1, pady=5)
+        self.b_modificar.grid(row=10, column=1, pady=4)
 
         self.b_borrar = Button(
             self.root,
             text="Borrar",
             borderwidth=4,
             command=lambda: self.boton.Borrar(),
-            fg="black",
-            bg="gold2",
+            fg=self.color3,
+            bg=self.color5,
             width=10,
             font=self.b_font,
         )
-        self.b_borrar.grid(row=10, column=0, pady=5, padx=5)
+        self.b_borrar.grid(row=10, column=0, pady=4, padx=5)
 
         self.b_listar = Button(
             self.root,
             text="Listar",
             borderwidth=4,
             command=lambda: self.boton.Listar(),
-            fg="black",
-            bg="gold2",
+            fg=self.color3,
+            bg=self.color5,
             width=10,
             font=self.b_font,
         )
-        self.b_listar.grid(row=9, column=0, pady=3, padx=5)
+        self.b_listar.grid(row=9, column=0, pady=4, padx=5)
+
+        # Radio buttons #######################################
+        #######################################################
+
+        self.m_radio = Frame(self.root)
+        self.m_radio.config(bg=self.color1)
+        self.m_radio.config(bd=1)
+        self.m_radio.config(relief="flat")
+        self.m_radio.grid(row=12, column=1, columnspan=11, pady=5, padx=5, sticky="n")
+        self.r = IntVar(value=0)
+
+        # listas de los widgets por color para que maneje el modelo
+        self.color1widgets = [
+            self.m_tprin,
+            self.l_proveedor,
+            self.l_producto,
+            self.l_defecto,
+            self.l_cantidad,
+            self.l_fecha,
+            self.l_nreclamo,
+            self.m_radio,
+            self.l_colores,
+        ]
+        self.colorbotones = [
+            self.b_borrar,
+            self.b_guardar,
+            self.b_listar,
+            self.b_modificar,
+            self.b_mostrar,
+        ]
+        self.radio1 = Radiobutton(self.m_radio)
+        self.radio2 = Radiobutton(self.m_radio)
+        self.radio3 = Radiobutton(self.m_radio)
+        # primero se definen los radio botones para que puedan ser agregados en la lista correspondiente
+        self.color2widgets = [
+            self.t_principal,
+            self.m_f7,
+            self.fila7,
+            self.radio1,
+            self.radio2,
+            self.radio3,
+        ]
+        self.radio1.config(
+            text="Rosa",
+            variable=self.r,
+            value=1,
+            bg=self.color2,
+            command=lambda: self.boton.cambiarcolor(
+                self.r,
+                self.root,
+                self.color1,
+                self.color2,
+                self.color3,
+                self.color4,
+                self.color5,
+                self.color1widgets,
+                self.color2widgets,
+                self.colorbotones,
+                self.style,
+            ),
+        )
+        self.radio2.config(
+            text="Verde",
+            variable=self.r,
+            value=2,
+            bg=self.color2,
+            command=lambda: self.boton.cambiarcolor(
+                self.r,
+                self.root,
+                self.color1,
+                self.color2,
+                self.color3,
+                self.color4,
+                self.color5,
+                self.color1widgets,
+                self.color2widgets,
+                self.colorbotones,
+                self.style,
+            ),
+        )
+        self.radio3.config(
+            text="Estandar",
+            variable=self.r,
+            value=3,
+            bg=self.color2,
+            command=lambda: self.boton.cambiarcolor(
+                self.r,
+                self.root,
+                self.color1,
+                self.color2,
+                self.color3,
+                self.color4,
+                self.color5,
+                self.color1widgets,
+                self.color2widgets,
+                self.colorbotones,
+                self.style,
+            ),
+        )
+        self.radio1.config(width=29)
+        self.radio1.pack(fill="both", expand="True", side="left")
+        self.radio3.config(width=30)
+        self.radio3.pack(fill="both", expand="True", side="right")
+        self.radio2.config(width=29)
+        self.radio2.pack(fill="both", expand="True", side="right")

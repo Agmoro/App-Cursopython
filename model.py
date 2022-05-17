@@ -242,7 +242,9 @@ class ABMC:
                     self.prodval.set(db[self.nrecval.get()]["producto"])
                     self.defval.set(db[self.nrecval.get()]["defecto"])
                     self.cantval.set(db[self.nrecval.get()]["cantidad"])
-
+                    self.mssgval.set(
+                        "Se ha seleccionado el reclamo N° " + self.nrecval.get()
+                    )
                 except:
                     self.mssgval.set("N° de reclamo no encontrado")
 
@@ -271,7 +273,7 @@ class ABMC:
             self.prodval.set(db[self.nrecval.get()]["producto"])
             self.defval.set(db[self.nrecval.get()]["defecto"])
             self.cantval.set(db[self.nrecval.get()]["cantidad"])
-
+            self.mssgval.set("Se ha seleccionado el reclamo N° " + self.nrecval.get())
         except:
             self.mssgval.set("N° de reclamo no encontrado")
 
@@ -305,7 +307,7 @@ class ABMC:
 
         if self.r.get() == 1:
             self.color1 = "#FF88DC"
-            self.color2 = "#91A6FF"
+            self.color2 = "#C297B8"
             self.color3 = "black"
             self.color4 = "#FF5154"
             self.color5 = "#FFFFFF"

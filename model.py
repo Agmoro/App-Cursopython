@@ -1,6 +1,5 @@
 import shelve
 from tkinter import messagebox
-from tkinter import StringVar
 import re
 
 # Funciones ###########################
@@ -105,9 +104,8 @@ class ABMC:
                     )
                     self.nrecval.set("")
                     db.close
-
-        except:
-            self.mssgval.set("N° de reclamo no hayado")
+        except KeyError:
+            self.mssgval.set("N° de reclamo no existente")
             self.nrecval.set("")
 
     def Modificar(self):
@@ -122,7 +120,7 @@ class ABMC:
                 db.close
 
             elif db.get(self.nrecval.get(), 0) == 0:
-                self.mssgval.set("N° de reclamo no existente")
+                self.mssgval.set("N° de reclamo no hayado")
                 self.nrecval.set("")
                 db.close
             elif (
@@ -175,8 +173,8 @@ class ABMC:
                 )
                 self.Limpiar()
                 db.close
-        except:
-            self.mssgval.set("N° de reclamo no hayado")
+        except KeyError:
+            self.mssgval.set("N° de reclamo no existente")
             self.Limpiar()
             db.close
 
@@ -247,9 +245,9 @@ class ABMC:
                     )
                 except:
                     self.mssgval.set("N° de reclamo no encontrado")
-
-                db.close
-        except:
+                finally:
+                    db.close
+        except KeyError:
             self.mssgval.set("N° de reclamo no existe")
             self.nrecval.set("")
             db.close
@@ -274,10 +272,10 @@ class ABMC:
             self.defval.set(db[self.nrecval.get()]["defecto"])
             self.cantval.set(db[self.nrecval.get()]["cantidad"])
             self.mssgval.set("Se ha seleccionado el reclamo N° " + self.nrecval.get())
-        except:
+        except KeyError:
             self.mssgval.set("N° de reclamo no encontrado")
-
-        db.close
+        finally:
+            db.close
 
     def cambiarcolor(
         self,
@@ -304,7 +302,7 @@ class ABMC:
         self.listabotones = listabotones
         self.root = root
         self.estilo = estilo
-
+        # Tema segun valor del radio button
         if self.r.get() == 1:
             self.color1 = "#FF88DC"
             self.color2 = "#C297B8"
@@ -324,6 +322,7 @@ class ABMC:
             self.color4 = "khaki4"
             self.color5 = "gold2"
 
+        # Modificación de colores segun grupos de widgets
         for self.wid in self.listacolor1:
             self.wid.configure(bg=self.color1)
         for self.wid in self.listacolor2:

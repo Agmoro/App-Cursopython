@@ -8,9 +8,11 @@ from tkinter import Scrollbar
 from tkinter import ttk
 from tkinter.font import Font
 from tkinter import IntVar
+from tkinter import PhotoImage
 from model import ABMC
 from tkcalendar import DateEntry
-from babel.numbers import *  # esto esta aca por que para hacer un ejecutable, el pyinstaller no encontraba el hidden import
+from babel.numbers import *
+# esto esta aca por que para hacer un ejecutable, el pyinstaller no encontraba el hidden import
 
 # Lo que sigue a continuación eventualmente lo ########
 # metere en otra base de datos, pero no queria ########
@@ -62,7 +64,9 @@ prod_cajas = [
     "Caja BM 6/75 cl",
     "Caja FB 12/45 cl",
     "Caja Ser Trad 12/70 cl",
-    "Caja PEM 6/75 cl" "Caja Carpano Rosso" "Caja Carpano Bianco",
+    "Caja PEM 6/75 cl"
+    "Caja Carpano Rosso"
+    "Caja Carpano Bianco",
 ]
 prod_botellas = [
     "Bot. FB/BM 75 cl",
@@ -168,7 +172,10 @@ class Ventana:
         self.root.title("Reclamos a Proveedores")
         self.root.configure(background=self.color1)
         # self.root.iconbitmap("F:\Curso Python\App ABMC\pngwing.ico")
-        self.root.iconbitmap("pngwing.ico")
+        self.root.call('wm', 'iconphoto', self.root._w,
+                       PhotoImage(file="icon.png"))
+
+        # self.root.iconbitmap("pngwing.ico")
 
         # Definicion de fuentes ###############################
         #######################################################
@@ -191,9 +198,11 @@ class Ventana:
         #######################################################
 
         self.cartocor = Proveedor("Cartocor", prod_cajas, def_cajas)
-        self.multilabel = Proveedor("Multilabel", prod_etiquetas, def_etiquetas)
+        self.multilabel = Proveedor("Multilabel", prod_etiquetas,
+                                    def_etiquetas)
         self.guala = Proveedor("Guala", prod_tapas, def_tapas)
-        self.cattorini = Proveedor("Cattorini Hnos.", prod_botellas, def_botellas)
+        self.cattorini = Proveedor("Cattorini Hnos.", prod_botellas,
+                                   def_botellas)
         self.islagrande = Proveedor("Isla Grande", prod_film, def_film)
 
         self.primeracorrida = Proveedor.first_run()
@@ -210,7 +219,8 @@ class Ventana:
 
         self.t_principal = Label(
             self.m_tprin,
-            text="                   REGISTRO DE RECLAMOS A PROVEEDORES                   ",
+            text=
+            "                   REGISTRO DE RECLAMOS A PROVEEDORES                   ",
             bg=self.color2,
             font=self.b_font2,
         )
@@ -229,9 +239,13 @@ class Ventana:
         self.l_cantidad.grid(row=4, column=0, sticky="w", padx=8)
         self.l_fecha = Label(self.root, text="Fecha", bg=self.color1)
         self.l_fecha.grid(row=5, column=0, sticky="w", padx=8)
-        self.l_nreclamo = Label(self.root, text="N° de Reclamo", bg=self.color1)
+        self.l_nreclamo = Label(self.root,
+                                text="N° de Reclamo",
+                                bg=self.color1)
         self.l_nreclamo.grid(row=8, column=0, sticky="w", padx=8)
-        self.l_colores = Label(self.root, text="Colores de tema", bg=self.color1)
+        self.l_colores = Label(self.root,
+                               text="Colores de tema",
+                               bg=self.color1)
         self.l_colores.grid(row=12, column=0, sticky="w", padx=8)
 
         # label de notificaciones #############################
@@ -241,13 +255,18 @@ class Ventana:
         self.m_f7.config(bg=self.color2)
         self.m_f7.config(bd=1)
         self.m_f7.config(relief="sunken")
-        self.m_f7.grid(
-            row=9, rowspan=3, column=4, columnspan=6, pady=6, padx=5, sticky="w"
-        )
+        self.m_f7.grid(row=9,
+                       rowspan=3,
+                       column=4,
+                       columnspan=6,
+                       pady=6,
+                       padx=5,
+                       sticky="w")
 
-        self.fila7 = Label(
-            self.m_f7, textvariable=self.mssgval, bg=self.color2, font=self.b_font
-        )
+        self.fila7 = Label(self.m_f7,
+                           textvariable=self.mssgval,
+                           bg=self.color2,
+                           font=self.b_font)
         self.fila7.pack(fill="both", expand="True", side="bottom")
         self.fila7.config(width=61, height=4)
 
@@ -287,7 +306,9 @@ class Ventana:
         self.e_defecto.current(0)
         self.e_defecto.grid(row=3, column=1, padx=10, pady=3)
 
-        self.e_cantidad = Entry(self.root, textvariable=self.cantval, bg="white")
+        self.e_cantidad = Entry(self.root,
+                                textvariable=self.cantval,
+                                bg="white")
         self.e_cantidad.grid(row=4, column=1, padx=10, pady=3)
 
         self.e_fecha = DateEntry(
@@ -300,10 +321,13 @@ class Ventana:
         )
         self.e_fecha.grid(row=5, column=1, padx=10, pady=3)
 
-        self.e_nreclamo = Entry(self.root, textvariable=self.nrecval, bg="white")
+        self.e_nreclamo = Entry(self.root,
+                                textvariable=self.nrecval,
+                                bg="white")
         self.e_nreclamo.grid(row=8, column=1, padx=10, pady=3)
 
-        self.provbind = Proveedor(self.e_proveedor, self.e_defecto, self.e_producto)
+        self.provbind = Proveedor(self.e_proveedor, self.e_defecto,
+                                  self.e_producto)
         self.provbind.removerse()
 
         self.e_proveedor.bind("<<ComboboxSelected>>", self.provbind.elijeprov)
@@ -328,7 +352,12 @@ class Ventana:
         #######################################################
 
         self.m_arbol = Frame(self.root)
-        self.m_arbol.grid(row=1, rowspan=8, column=4, padx=5, pady=4, sticky="n")
+        self.m_arbol.grid(row=1,
+                          rowspan=8,
+                          column=4,
+                          padx=5,
+                          pady=4,
+                          sticky="n")
 
         # Treeview Scrollbar ##################################
         #######################################################
@@ -339,7 +368,8 @@ class Ventana:
         # Treeview ############################################
         #######################################################
 
-        self.arbol = ttk.Treeview(self.m_arbol, yscrollcommand=self.scroll_arbol.set)
+        self.arbol = ttk.Treeview(self.m_arbol,
+                                  yscrollcommand=self.scroll_arbol.set)
         self.arbol["columns"] = (
             "N°",
             "Fecha",
@@ -458,7 +488,12 @@ class Ventana:
         self.m_radio.config(bg=self.color1)
         self.m_radio.config(bd=1)
         self.m_radio.config(relief="flat")
-        self.m_radio.grid(row=12, column=1, columnspan=11, pady=5, padx=5, sticky="n")
+        self.m_radio.grid(row=12,
+                          column=1,
+                          columnspan=11,
+                          pady=5,
+                          padx=5,
+                          sticky="n")
         self.r = IntVar(value=0)
 
         # listas de los widgets por color para que maneje el modelo
